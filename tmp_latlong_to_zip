@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 23 11:43:00 2021
+
+@author: julie
+"""
+## Testing latitude-longitude conversion
+
+import numpy as np
+import pandas as pd
+import geopy
+# from geopy.geocoders import Nominatim
+
+def latlong_to_zip(df, geolocator, lat, lon):    #https://gis.stackexchange.com/questions/352961/convert-lat-lon-to-zip-postal-code-using-python
+    """
+    This takes in latitude and longitude coordinates and outputs city zipcode using geopy
+    arguments: latitude (float), longitude(float)
+    returns: zipcode (string?)
+    """
+    location = geolocator.reverse((df[lat], df[lon]))
+    return location.raw['address']['postcode']
+
+## Create geocoder
+geolocator = geopy.Nominatim(user_agent = "bike_accidents")
+
+clean_bike_data = bike_data_or[['LATITUDE', 'LONGITUDE']].dropna()   #29465 without NA, 31782 with
+# clean_short_list = bike_data_and[['LATITUDE', 'LONGITUDE']].dropna()     #268
+df = bike_data_and[['LATITUDE', 'LONGITUDE']].dropna()
+
+## retrieve zipcode
+addresses = df.apply(latlong_to_zip, axis=1, geolocator=geolocator, lat_field = 'LATITUDE', lon_field='LONGITUDE')
